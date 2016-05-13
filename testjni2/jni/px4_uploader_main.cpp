@@ -455,43 +455,30 @@ uploader::__send(const uint8_t c){
 #if DEBUG 
 	switch(c) {
 		case EOC:
-			printf("__send() : send EOC\n");
 			break;
 		case GET_SYNC:
-			printf("__send() : send GET_SYNC\n");
 			break;
 		case GET_DEVICE:
-			printf("__send() : send GET_DEVICE\n");
 			break;
 		case CHIP_ERASE:
-			printf("__send() : send CHIP_ERASE\n");
 			break;
 		case CHIP_VERIFY:
-			printf("__send() : send CHIP_VERIFY\n");
 			break;
 		case PROG_MULTI:
-			printf("__send() : send PROG_MULTI\n");
 			break;
 		case READ_MULTI: 
-			printf("__send() : send READ_MULTI\n");
 			break;
 		case GET_CRC: 
-			printf("__send() : send GET_CRC\n");
 			break;
 		case GET_OTP: 
-			printf("__send() : send GET_OTP\n");
 			break;
 		case GET_SN: 
-			printf("__send() : send GET_SN\n");
 			break;
 		case GET_CHIP: 
-			printf("__send() : send GET_CHIP\n");
 			break;
 		case SET_BOOT_DELAY: 
-			printf("__send() : send SET_BOOT_DELAY\n");
 			break;
 		case REBOOT: 
-			printf("__send() : send REBOOT\n");
 			break;
 		default:
 			break;
@@ -661,42 +648,30 @@ uploader::__getSync(){
 #if DEBUG
 	switch (c[0]){
 		case INSYNC:
-			printf("INSYNC received\n");
 			break;
 		case EOC:
-			printf("EOC received\n");
 			break;
 		case INVALID:
-			printf("INVALID received\n");
 			break;
 		case FAILED:
-			printf("FAILED received\n");
 			break;
 		case OK:
-			printf("OK received\n");
 			break;
 		default:
-			printf("__getSync() c[0] undefined, c[0] = 0x%x\n", c[0]);
 			break;
 	}
 	switch(c[1]){
 		case INSYNC:
-			printf("INSYNC received\n");
 			break;
 		case EOC:
-			printf("EOC received\n");
 			break;
 		case INVALID:
-			printf("INVALID received\n");
 			break;
 		case FAILED:
-			printf("FAILED received\n");
 			break;
 		case OK:
-			printf("OK received\n");
 			break;
 		default:
-			printf("__getSync() c[1] undefined, c[1] = 0x%x\n", c[1]);
 			break;
 	}
 #endif
