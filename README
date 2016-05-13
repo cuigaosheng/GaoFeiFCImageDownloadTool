@@ -1,0 +1,26 @@
+如何编译px4_uploader？
+	答：g++ px4_uploader_main.cpp base64.cpp base64.h  -I /home/cuigaosheng/ruimei_work/json-c/include/ -L /home/cuigaosheng/ruimei_work/json-c/libs/linux-gcc-4.9.2/ -ljson_linux-gcc-4.9.2_libmt -std=c++11 -g -lz
+
+
+在使用gdm3d-uav开源软件以UDP方式连接地面站,在编译gdm3d-uav源码过程中出现了关于线程的错误，怎么解决？
+	答：gdm3d-uav编译时出现sem_post找不到的错误时,我们需要在CMakeLists.txt中添加下面这一句,TARGET_LINK_LIBRARIES(gdm3d-uav pthread),用来链接线程库。
+
+/*scons的下载地址解压命令与环境变量的设定方法*/
+scons 在这里http://www.scons.org/pages/download.html
+解压  tar -zxvf scons-2.0.1.tar.gz
+设定环境变量
+export MYSCONS=/home/cuigaosheng/ruimei_work/scons-2.1.0/
+export SCONS_LIB_DIR=$MYSCONS/engine
+
+/**JSON的安装/
+cd jsoncpp-src-0.5.0
+python $MYSCONS/script/scons platform=linux-gcc
+在jsoncpp-src-0.5.0/libs/linux-gcc-4.9.2目录下
+libjson_linux-gcc-4.9.2_libmt.a
+libjson_linux-gcc-4.9.2_libmt.so
+
+sudo cp /home/cuigaosheng/ruimei_work/json-c/libs/linux-gcc-4.9.2/libjson_linux-gcc-4.9.2_libmt.so /usr/lib
+
+cp libz.so libz.so.1 libz.so.1.2.7 /usr/lib (/home/cuigaosheng/ruimei_work/zlib-c/zlib-1.2.7)
+
+
