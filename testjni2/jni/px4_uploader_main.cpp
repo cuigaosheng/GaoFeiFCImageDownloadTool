@@ -19,7 +19,7 @@
 #include "base64.h"
 
 uLong length_after_decompress;
-#define DEBUG 0
+#define DEBUG 1
 #define tcdrain(fd) ioctl(fd, TCSBRK, 1); 
 #define NSH_SEND_REBOOT_SLEEP_TIME 0
 #define ERASE_CHIP_TIME 6
