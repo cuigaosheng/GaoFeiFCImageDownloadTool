@@ -1,4 +1,4 @@
-如何编译px4_uploader？
+How to compile px4_uploader？
 	答：g++ px4_uploader_main.cpp base64.cpp base64.h  -I /home/cuigaosheng/ruimei_work/json-c/include/ -L /home/cuigaosheng/ruimei_work/json-c/libs/linux-gcc-4.9.2/ -ljson_linux-gcc-4.9.2_libmt -std=c++11 -g -lz
 
 
