@@ -14,8 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-//#include "json/json.h"
-#include "json-c/include/json/json.h"
+#include "json/json.h"
 #include "zlib.h"
 #include "base64.h"
 
@@ -66,15 +65,15 @@ using namespace std;
 #define   PROG_MULTI_MAX   252  // protocol max is 255, must be multiple of 4
 #define   READ_MULTI_MAX   252  // protocol max is 255
 
-uint8_t   NSH_INIT[3] =  {'\x0d', '\x0d', '\x0d'};
-uint8_t   GET_SYNC_EOC[2] = {'\x21', '\x20'};
-uint8_t   NSH_REBOOT_BL[10] = {'r', 'e', 'b', 'o', 'o', 't', ' ', '-','b', '\n'};
-uint8_t   NSH_REBOOT[7] = {'r', 'e', 'b', 'o', 'o', 't','\n'};
-uint8_t   BOOT_DELAY[4] = {'\00', '\00', '\00', '\01'}; /*TODO*/
+int8_t   NSH_INIT[3] =  {'\x0d', '\x0d', '\x0d'};
+int8_t   GET_SYNC_EOC[2] = {'\x21', '\x20'};
+int8_t   NSH_REBOOT_BL[10] = {'r', 'e', 'b', 'o', 'o', 't', ' ', '-','b', '\n'};
+int8_t   NSH_REBOOT[7] = {'r', 'e', 'b', 'o', 'o', 't','\n'};
+int8_t   BOOT_DELAY[4] = {'\00', '\00', '\00', '\01'}; /*TODO*/
 
-uint8_t   MAVLINK_REBOOT_ID1[41] = {'\xfe', '\x21', '\x72', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\xf6', '\x00', '\x01', '\x00', '\x00', '\x48', '\xf0'};
+int8_t   MAVLINK_REBOOT_ID1[41] = {'\xfe', '\x21', '\x72', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\xf6', '\x00', '\x01', '\x00', '\x00', '\x48', '\xf0'};
 
-uint8_t   MAVLINK_REBOOT_ID0[41] = {'\xfe', '\x21', '\x45', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\xf6', '\x00', '\x00', '\x00', '\x00', '\xd7', '\xac'};
+int8_t   MAVLINK_REBOOT_ID0[41] = {'\xfe', '\x21', '\x45', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\xf6', '\x00', '\x00', '\x00', '\x00', '\xd7', '\xac'};
 
 
 char serial_path_splicing_path_str[13] = {};	/*Used to storage the serial name. as example of "/dev/ttyACM0".*/
@@ -122,7 +121,7 @@ class firmware:public debugfile{
 		Bytef* __image;
 
 	private:
-		uint8_t* image;
+		int8_t* image;
 		int count;
 };
 
@@ -135,22 +134,22 @@ class uploader:public serial, debugfile{
 		~uploader(){
 		};
 
-		void __send(const uint8_t c);	
-		void __send_array(const uint8_t* buffer, const int length);	
+		void __send(const int8_t c);	
+		void __send_array(const int8_t* buffer, const int length);	
 		void __identify();
 		void __upload(firmware fw);
 		void __close();
 		void __init();
 		void __send_reboot();
 		void __nsh_send_reboot();
-		uint8_t __read_datas_tty(int fd, uint8_t *tmp, const int sec, const int usec);
-		uint8_t flag_send_reboot;
+		int8_t __read_datas_tty(int fd, int8_t *tmp, const int sec, const int usec);
+		int8_t flag_send_reboot;
 	private:
-		uint8_t __recv();
+		int8_t __recv();
 		void __getSync();
 		void __sync();
 		void __erase(const char* label);
-		void __program_multi(const uint8_t* data, const int length);
+		void __program_multi(const int8_t* data, const int length);
 		void __program(const char* label, firmware fw);
 };
 
@@ -450,7 +449,7 @@ uploader::__close(){
 }
 
 void 
-uploader::__send(const uint8_t c){
+uploader::__send(const int8_t c){
 #if DEBUG 
 	switch(c) {
 		case EOC:
@@ -514,7 +513,7 @@ uploader::__send(const uint8_t c){
 	return ;
 } 
 void
-uploader::__send_array(const uint8_t* buffer, const int length){
+uploader::__send_array(const int8_t* buffer, const int length){
 
 	int bytes_left;   
 	int written_bytes;   
@@ -558,16 +557,16 @@ uploader::__send_array(const uint8_t* buffer, const int length){
 	return;   
 }
 
-uint8_t
+int8_t
 uploader::__recv(){ 	
-	uint8_t tmp = 0;
+	int8_t tmp = 0;
 	__read_datas_tty(fd, &tmp, 10, 10);
 
 	return tmp;
 }
 
-uint8_t 
-uploader::__read_datas_tty(int fd, uint8_t *tmp, const int sec, const int usec){
+int8_t 
+uploader::__read_datas_tty(int fd, int8_t *tmp, const int sec, const int usec){
 	int retval;
 	fd_set rfds;
 	struct timeval tv;
@@ -631,7 +630,7 @@ uploader::__getSync(){
 #if DEBUG
 	printf("__getSync\n");
 #endif
-	uint8_t c[2];
+	int8_t c[2];
 	c[0] = __recv();
 	c[1] = __recv();
 #if DEBUG
@@ -724,7 +723,7 @@ uploader::__erase(const char* label){
 
 void
 uploader::__program(const char* label, firmware fw){
-	uint8_t* code = fw.__image; 
+	int8_t* code = (int8_t*)fw.__image; 
 	int i = 0; 
 	int left;/*Best practive code*/
 	for(i = 0; i < length_after_decompress;){
@@ -749,7 +748,7 @@ uploader::__program(const char* label, firmware fw){
 
 
 void
-uploader::__program_multi(const uint8_t* data, const int length){
+uploader::__program_multi(const int8_t* data, const int length){
 	__send(PROG_MULTI);	
 	__send(length);	
 	__send_array(data, length);
