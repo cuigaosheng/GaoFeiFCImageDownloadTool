@@ -4,7 +4,6 @@
 adb devices -l
 
 第二步：通过adb传输px4_uploader到Android板
-adb root
 adb remount
 adb push px4_uploader /system/bin
 
