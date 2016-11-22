@@ -26,9 +26,9 @@ sudo python /usr/bin/scons platform=linux-gcc #TODO DEBUG
 
 sudo cp -R /opt/jsoncpp-src-0.6.0-rc2/include/json /usr/include
 
-sudo cp /opt/jsoncpp-src-0.6.0-rc2/libs/linux-gcc-5.4.0/libjson_linux-gcc-5.4.0_libmt.a /usr/local/lib
+sudo cp /opt/jsoncpp-src-0.6.0-rc2/libs/linux-gcc-4.9.2/libjson_linux-gcc-4.9.2_libmt.a /usr/local/lib
 
-sudo cp /opt/jsoncpp-src-0.6.0-rc2/libs/linux-gcc-5.4.0/libjson_linux-gcc-5.4.0_libmt.so /usr/local/lib
+sudo cp /opt/jsoncpp-src-0.6.0-rc2/libs/linux-gcc-4.9.2/libjson_linux-gcc-4.9.2_libmt.so /usr/local/lib
 
 JSONLIB=/usr/local/lib
 NEW_LINE="export LD_LIBRARY_PATH="$JSONLIB""
