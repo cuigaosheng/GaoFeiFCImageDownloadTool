@@ -1,0 +1,5 @@
+*.gch
+*.o
+*.dblite
+px4_uploader
+./testjni2/libs/armeabi/px4_uploader
