@@ -23,4 +23,6 @@ sudo cp /home/cuigaosheng/ruimei_work/json-c/libs/linux-gcc-4.9.2/libjson_linux-
 
 cp libz.so libz.so.1 libz.so.1.2.7 /usr/lib (/home/cuigaosheng/ruimei_work/zlib-c/zlib-1.2.7)
 
-
+/*如何上传本地项目到远程服务器*/
+git remote add origin git@ruimei.iok.la:px4.git /*添加远程服务器本地代表origin*/
+git push -u origin master /*将本地master分支上传到远程服务器*/
