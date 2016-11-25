@@ -1,6 +1,8 @@
 #define F_PATH "./param596.params"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <mavlink.h>
 
 struct paras{
 	//int mav_id;
@@ -9,6 +11,7 @@ struct paras{
 	char value[30];
 	//int value_num;
 };
+
 /*get value from every line*/
 void get_params_from_line(char *_str, struct paras* __one_param){
 	char *i, *j, *k; 
@@ -48,10 +51,12 @@ void get_line_from_file(struct paras _one_param){
 
 	return;
 }
-
+/*
+*MAV_CMD_DO_SET_PARAMETER
+*/
 int main(void){
 	struct paras one_param;
 	get_line_from_file(one_param);	
-
+	mavlink_heartbeat_t my_heartbeat;
 	return 0;
 }
