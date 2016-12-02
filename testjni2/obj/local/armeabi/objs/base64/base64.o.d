@@ -1,7 +1,5 @@
-/home/cuigaosheng/ruimei_work/testjni2/obj/local/armeabi/objs/base64/base64.o: \
- /home/cuigaosheng/ruimei_work/testjni2/jni/base64.cpp \
- /home/cuigaosheng/ruimei_work/testjni2/jni/base64.h \
- /home/cuigaosheng/ruimei_work/testjni2/jni/macros.h \
+obj/local/armeabi/objs/base64/base64.o: jni/base64.cpp jni/base64.h \
+ jni/macros.h \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/string \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_prolog.h \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_cprolog.h \
@@ -148,9 +146,9 @@
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_epilog.h \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_config_compat_post.h
 
-/home/cuigaosheng/ruimei_work/testjni2/jni/base64.h:
+jni/base64.h:
 
-/home/cuigaosheng/ruimei_work/testjni2/jni/macros.h:
+jni/macros.h:
 
 /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/string:
 

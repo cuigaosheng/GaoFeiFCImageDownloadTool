@@ -12,7 +12,11 @@ include $(BUILD_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-	px4_uploader_main.cpp
+	px4_uploader_main.cpp \
+	write_parameter.cpp \
+	serial_port.cpp \
+	autopilot_interface.cpp
+
 //LOCAL_LDFLAGS := 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../jsoncpp  
 LOCAL_STATIC_LIBRARIES := \

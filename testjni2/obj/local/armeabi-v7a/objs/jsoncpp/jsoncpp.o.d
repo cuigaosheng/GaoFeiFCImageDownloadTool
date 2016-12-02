@@ -1,6 +1,5 @@
-/home/cuigaosheng/ruimei_work/testjni2/obj/local/armeabi-v7a/objs/jsoncpp/jsoncpp.o: \
- /home/cuigaosheng/ruimei_work/testjni2/jni/jsoncpp/jsoncpp.cpp \
- /home/cuigaosheng/ruimei_work/testjni2/jni/jsoncpp/json/json.h \
+obj/local/armeabi-v7a/objs/jsoncpp/jsoncpp.o: jni/jsoncpp/jsoncpp.cpp \
+ jni/jsoncpp/json/json.h \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/string \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_prolog.h \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_cprolog.h \
@@ -176,7 +175,7 @@
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/iomanip \
  /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/stl/_iomanip.h
 
-/home/cuigaosheng/ruimei_work/testjni2/jni/jsoncpp/json/json.h:
+jni/jsoncpp/json/json.h:
 
 /usr/local/lib/android-ndk-r9d/sources/cxx-stl/stlport/stlport/string:
 

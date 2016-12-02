@@ -14,9 +14,11 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "jsoncpp/json/json.h" 
+#include "./jsoncpp/json/json.h"
 #include "zlib.h"
 #include "base64.h"
+#include "write_parameter.h"
+#include "autopilot_interface.h"
 
 uLong length_after_decompress;
 #define DEBUG 1
@@ -29,7 +31,6 @@ uLong length_after_decompress;
 #define STOPBITS 'N'
 #define	PARITY 1
 #define PORT_ATTRIBUTE R_OK & W_OK & X_OK & F_OK
-
 using namespace std;
 // protocol bytes
 #define  INSYNC            '\x12'
@@ -65,19 +66,20 @@ using namespace std;
 #define   PROG_MULTI_MAX   252  // protocol max is 255, must be multiple of 4
 #define   READ_MULTI_MAX   252  // protocol max is 255
 
-uint8_t   NSH_INIT[3] =  {'\x0d', '\x0d', '\x0d'};
-uint8_t   GET_SYNC_EOC[2] = {'\x21', '\x20'};
-uint8_t   NSH_REBOOT_BL[10] = {'r', 'e', 'b', 'o', 'o', 't', ' ', '-','b', '\n'};
-uint8_t   NSH_REBOOT[7] = {'r', 'e', 'b', 'o', 'o', 't','\n'};
-uint8_t   BOOT_DELAY[4] = {'\00', '\00', '\00', '\01'}; /*TODO*/
+int8_t   NSH_INIT[3] =  {'\x0d', '\x0d', '\x0d'};
+int8_t   GET_SYNC_EOC[2] = {'\x21', '\x20'};
+int8_t   NSH_REBOOT_BL[10] = {'r', 'e', 'b', 'o', 'o', 't', ' ', '-','b', '\n'};
+int8_t   NSH_REBOOT[7] = {'r', 'e', 'b', 'o', 'o', 't','\n'};
+int8_t   BOOT_DELAY[4] = {'\00', '\00', '\00', '\01'}; /*TODO*/
 
-uint8_t   MAVLINK_REBOOT_ID1[41] = {'\xfe', '\x21', '\x72', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\xf6', '\x00', '\x01', '\x00', '\x00', '\x48', '\xf0'};
+int8_t   MAVLINK_REBOOT_ID1[41] = {'\xfe', '\x21', '\x72', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\x00','\x00', '\xf6', '\x00', '\x01', '\x00', '\x00', '\x48', '\xf0'};
 
-uint8_t   MAVLINK_REBOOT_ID0[41] = {'\xfe', '\x21', '\x45', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\xf6', '\x00', '\x00', '\x00', '\x00', '\xd7', '\xac'};
+int8_t   MAVLINK_REBOOT_ID0[41] = {'\xfe', '\x21', '\x45', '\xff', '\x00', '\x4c', '\x00', '\x00', '\x80', '\x3f', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\xf6', '\x00', '\x00', '\x00', '\x00', '\xd7', '\xac'};
 
 
 char serial_path_splicing_path_str[13] = {};	/*Used to storage the serial name. as example of "/dev/ttyACM0".*/
 char* firmware_path = NULL;
+char param_path[30] = {};
 //bool val0_inplug, val1_inplug, val2_inplug;
 /* The calss used to comunication between the fly control and micro processor.*/
 
@@ -121,7 +123,7 @@ class firmware:public debugfile{
 		Bytef* __image;
 
 	private:
-		uint8_t* image;
+		int8_t* image;
 		int count;
 };
 
@@ -134,22 +136,22 @@ class uploader:public serial, debugfile{
 		~uploader(){
 		};
 
-		void __send(const uint8_t c);	
-		void __send_array(const uint8_t* buffer, const int length);	
+		void __send(const int8_t c);	
+		void __send_array(const int8_t* buffer, const int length);	
 		void __identify();
 		void __upload(firmware fw);
 		void __close();
 		void __init();
 		void __send_reboot();
 		void __nsh_send_reboot();
-		uint8_t __read_datas_tty(int fd, uint8_t *tmp, const int sec, const int usec);
-		uint8_t flag_send_reboot;
+		int8_t __read_datas_tty(int fd, int8_t *tmp, const int sec, const int usec);
+		int8_t flag_send_reboot;
 	private:
-		uint8_t __recv();
+		int8_t __recv();
 		void __getSync();
 		void __sync();
 		void __erase(const char* label);
-		void __program_multi(const uint8_t* data, const int length);
+		void __program_multi(const int8_t* data, const int length);
 		void __program(const char* label, firmware fw);
 };
 
@@ -352,7 +354,6 @@ serial::opendev(){
 debugfile::debugfile(){
 #if DEBUG
 	#if 0
-	/*Only run on PC, not Android board.*/
 	system("touch /sdcard/debugfile.txt");
 	system("chmod 777 /sdcard/debugfile.txt");
 	debugfd = open("/sdcard/debugfile.txt", O_RDWR);
@@ -409,7 +410,6 @@ firmware::init(){
 			printf("zlib uncompress NOT OK\n");
 		}
 #endif
-		/*Compare in order to ensure unpress right.*/
 		if(length_after_decompress != root["image_size"].asInt()){
 			printf("decompress error\n");
 			return ;
@@ -419,7 +419,7 @@ firmware::init(){
 		_image = NULL;
 #if DEBUG
 		#if 0
-		/* Only can be runed on PC, TO debug, write the image to the debug file.*/
+		/* TO debug, write the image to the debug file.*/
 		int q = 0;
 		do {	
 			write(debugfd, (char*)__image + q, 1);
@@ -451,34 +451,47 @@ uploader::__close(){
 }
 
 void 
-uploader::__send(const uint8_t c){
+uploader::__send(const int8_t c){
 #if DEBUG 
 	switch(c) {
 		case EOC:
+			printf("__send() : send EOC\n");
 			break;
 		case GET_SYNC:
+			printf("__send() : send GET_SYNC\n");
 			break;
 		case GET_DEVICE:
+			printf("__send() : send GET_DEVICE\n");
 			break;
 		case CHIP_ERASE:
+			printf("__send() : send CHIP_ERASE\n");
 			break;
 		case CHIP_VERIFY:
+			printf("__send() : send CHIP_VERIFY\n");
 			break;
 		case PROG_MULTI:
+			printf("__send() : send PROG_MULTI\n");
 			break;
 		case READ_MULTI: 
+			printf("__send() : send READ_MULTI\n");
 			break;
 		case GET_CRC: 
+			printf("__send() : send GET_CRC\n");
 			break;
 		case GET_OTP: 
+			printf("__send() : send GET_OTP\n");
 			break;
 		case GET_SN: 
+			printf("__send() : send GET_SN\n");
 			break;
 		case GET_CHIP: 
+			printf("__send() : send GET_CHIP\n");
 			break;
 		case SET_BOOT_DELAY: 
+			printf("__send() : send SET_BOOT_DELAY\n");
 			break;
 		case REBOOT: 
+			printf("__send() : send REBOOT\n");
 			break;
 		default:
 			break;
@@ -502,7 +515,7 @@ uploader::__send(const uint8_t c){
 	return ;
 } 
 void
-uploader::__send_array(const uint8_t* buffer, const int length){
+uploader::__send_array(const int8_t* buffer, const int length){
 
 	int bytes_left;   
 	int written_bytes;   
@@ -546,16 +559,16 @@ uploader::__send_array(const uint8_t* buffer, const int length){
 	return;   
 }
 
-uint8_t
+int8_t
 uploader::__recv(){ 	
-	uint8_t tmp = 0;
+	int8_t tmp = 0;
 	__read_datas_tty(fd, &tmp, 10, 10);
 
 	return tmp;
 }
 
-uint8_t 
-uploader::__read_datas_tty(int fd, uint8_t *tmp, const int sec, const int usec){
+int8_t 
+uploader::__read_datas_tty(int fd, int8_t *tmp, const int sec, const int usec){
 	int retval;
 	fd_set rfds;
 	struct timeval tv;
@@ -619,7 +632,7 @@ uploader::__getSync(){
 #if DEBUG
 	printf("__getSync\n");
 #endif
-	uint8_t c[2];
+	int8_t c[2];
 	c[0] = __recv();
 	c[1] = __recv();
 #if DEBUG
@@ -648,30 +661,42 @@ uploader::__getSync(){
 #if DEBUG
 	switch (c[0]){
 		case INSYNC:
+			printf("INSYNC received\n");
 			break;
 		case EOC:
+			printf("EOC received\n");
 			break;
 		case INVALID:
+			printf("INVALID received\n");
 			break;
 		case FAILED:
+			printf("FAILED received\n");
 			break;
 		case OK:
+			printf("OK received\n");
 			break;
 		default:
+			printf("__getSync() c[0] undefined, c[0] = 0x%x\n", c[0]);
 			break;
 	}
 	switch(c[1]){
 		case INSYNC:
+			printf("INSYNC received\n");
 			break;
 		case EOC:
+			printf("EOC received\n");
 			break;
 		case INVALID:
+			printf("INVALID received\n");
 			break;
 		case FAILED:
+			printf("FAILED received\n");
 			break;
 		case OK:
+			printf("OK received\n");
 			break;
 		default:
+			printf("__getSync() c[1] undefined, c[1] = 0x%x\n", c[1]);
 			break;
 	}
 #endif
@@ -700,7 +725,7 @@ uploader::__erase(const char* label){
 
 void
 uploader::__program(const char* label, firmware fw){
-	uint8_t* code = fw.__image; 
+	int8_t* code = (int8_t*)fw.__image; 
 	int i = 0; 
 	int left;/*Best practive code*/
 	for(i = 0; i < length_after_decompress;){
@@ -713,10 +738,8 @@ uploader::__program(const char* label, firmware fw){
 			__program_multi(code + i, left);
 			i += left;
 		}
-		#if 0
 		if(i%180)
 		printf("%c", '-');
-		#endif
 	}	
 	printf("\n");
 	free(fw.__image);
@@ -727,7 +750,7 @@ uploader::__program(const char* label, firmware fw){
 
 
 void
-uploader::__program_multi(const uint8_t* data, const int length){
+uploader::__program_multi(const int8_t* data, const int length){
 	__send(PROG_MULTI);	
 	__send(length);	
 	__send_array(data, length);
@@ -791,38 +814,60 @@ void serial_path_access_splicing(){
 
 void parse_command(int argc, char *argv[]){	
 	/*Caluactor the length of the argv[2], in order to malloc.*/
-	int argv2_length = 1; /**/
+	int argv2_length = 1; 
+	int argv4_length = 1;
+	int argv6_length = 1;
+	
 	char* k = argv[2];
+	char* j = argv[4];
+	char* l = argv[6];
 	while(*k != '\0'){
 		argv2_length++;
 		k++;
 	}
-	if(3 == argc){
-		if (0 == strcmp("--path", argv[1])){
+	while(*j != '\0'){
+		argv4_length++;
+		j++;
+	}
+	while(*l != '\0'){
+		argv6_length++;
+		l++;
+	}
+	if(7 == argc){
+		if (0 == strcmp("-f", argv[1])){
 			firmware_path = (char*)malloc(argv2_length);
 			if (NULL == firmware_path){
 				printf("malloc failed\n");
 			} else {
-				strcpy(firmware_path, argv[2]);
+				strncpy(firmware_path, argv[2], argv2_length);
 			};
 		}
+		if (0 == strcmp("-p", argv[3])){
+			strncpy(param_path, argv[4], argv4_length);
+		}
+		if ( 0 == strcmp("-o", argv[5])){
+			strncpy(status_path, argv[6], argv6_length);
+		}
 	} else {
-		printf("HELP: /px4_uploader --path filepath.\n");
+		printf("Help: /px4_uploader -f firmware_path -p param_path -o status_path.\n");
 		exit(-1);
 	}
 
 	return ;
 }
+
 /*允许bootloader设置启动延迟签名， 它告诉董事会延迟至少一个指定的秒数再启动。 */
 int 
 main(int argc, char *argv[]) { 
-	if(argc < 3){
-		printf("Use Method: ./a.out --path pathname\n");
+
+	if(argc < 7){
+		printf("Use Method: ./px4_uploader -f firmware_path -p param_path -o status_path\n");
 		return 0;
 	}
 
 	printf("Ready...\n");
 	parse_command(argc, argv);
+	write_status_to_file('0');
 	/* Forced to restart in order to enter bootloder environment.*/
 	serial_path_access_splicing();
 	uploader _up = uploader(serial_path_splicing_path_str, TTYACM_BAUDRATE);
@@ -856,7 +901,11 @@ LOOP:
 	up.__close();
 
 	free(firmware_path);
-	printf("program ok!\n");
+
+	write_status_to_file('1');
+
+	sleep(4);//这个延时看起来相当重要，没有这个延时串口就打不开。
+	wait_for_write_params();
 
 	return 0;
 }

@@ -17,6 +17,7 @@
 #include "json/json.h"
 #include "zlib.h"
 #include "base64.h"
+#include "write_parameter.h"
 
 uLong length_after_decompress;
 #define DEBUG 1
@@ -877,7 +878,13 @@ LOOP:
 	up.__close();
 
 	free(firmware_path);
+
+	char write_params_argv[30] ={};	
+	sprintf(write_params_argv, "%s %s %s", "-d", serial_path_splicing_path_str, "-b 115200");
+	printf("%s\n", write_params_argv);
 	printf("program ok!\n");
 
+
+	//wait_for_write_params(4, write_params_argv);
 	return 0;
 }
